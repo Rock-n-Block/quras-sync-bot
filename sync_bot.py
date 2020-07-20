@@ -6,6 +6,7 @@ import settings
 
 bot = telebot.TeleBot(settings.TELEGRAM_TOKEN)
 
+
 def create_db_connection():
     connection = psycopg2.connect(
         user=settings.POSTGRES_AUTH['user'],
