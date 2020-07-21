@@ -33,8 +33,8 @@ def is_current_status_alert(sync_status):
 
 
 def run_notifier():
+    logging.info('Notifier launched')
     while True:
-        logging.info('Notifier launched')
         sync_status = get_sync_status()
         is_current_status_alert(sync_status)
         sleep(60)
