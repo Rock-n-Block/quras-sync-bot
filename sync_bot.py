@@ -1,4 +1,5 @@
 import telebot
+import logging
 
 from status_fetcher import get_sync_status
 from database_api import save_user_to_db, get_all_users, delete_user_from_db
@@ -29,7 +30,7 @@ def send_welcome(message):
 
 @bot.message_handler(commands=['ping'])
 def send_pong(message):
-    print('ping received, sending pong', flush=True)
+    logging.info('ping received, sending pong')
     bot.send_message(message.chat.id, text='pong', reply_markup=keyboard)
 
 
@@ -40,6 +41,7 @@ def send_current_stats(message):
     for key, val in current_status.items():
         status_list.append('{source}: {blocks}'.format(source=key.upper(), blocks=val))
     status_text = '\n'.join(status_list)
+    logging.info('status request received')
     bot.send_message(message.chat.id, text=str(status_text), reply_markup=keyboard)
 
 
@@ -50,5 +52,9 @@ def send_unsubscribe(message):
     bot.send_message(message.chat.id, text=msg_text, reply_markup=keyboard)
 
 
-if __name__ == '__main__':
+def run_bot():
     bot.polling()
+
+
+if __name__ == '__main__':
+    run_bot()

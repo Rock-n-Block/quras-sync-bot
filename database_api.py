@@ -1,4 +1,5 @@
 import psycopg2
+import logging
 
 import settings
 
@@ -47,7 +48,7 @@ def save_user_to_db(chat_id):
         cur.execute('INSERT INTO users (telegram_chat_id) VALUES (%s) ' % chat_id)
         conn.commit()
 
-        print('user with id %s added to subscribe' % chat_id, flush=True)
+        logging.info('user with id %s added to subscribe' % chat_id,)
 
     cur.close()
     conn.close()
@@ -83,7 +84,7 @@ def delete_user_from_db(chat_id):
         cur.execute('DELETE FROM users WHERE telegram_chat_id = %s;' % chat_id)
         conn.commit()
 
-        print('user with id %s deleted from subscription' % chat_id, flush=True)
+        logging.info('user with id %s deleted from subscription' % chat_id)
 
     cur.close()
     conn.close()
@@ -124,14 +125,13 @@ def save_update_block_cache(block_info):
                     bitcore=block_info['bitcore']
                     )
 
-    # print(sql_str, flush=True)
     cur.execute(sql_str)
     conn.commit()
 
     cur.close()
     conn.close()
 
-    print('Block cache updated', flush=True)
+    logging.info('Block cache updated')
 
 
 def get_from_block_cache():

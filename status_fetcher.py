@@ -1,6 +1,7 @@
 import requests
 from datetime import datetime, timezone
 import json
+import logging
 
 from database_api import save_update_block_cache, get_from_block_cache
 
@@ -74,7 +75,7 @@ def get_sync_status():
 
         save_update_block_cache(result)
     except CommonFetchException:
-        print('Error in fetching new blocks, retry in 60s', flush=True)
+        logging.error('Error in fetching new blocks, retry in 60s')
         result = get_from_block_cache()
 
     return result
