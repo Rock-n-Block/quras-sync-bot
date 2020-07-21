@@ -38,9 +38,12 @@ def initialize_blocks_table():
 def save_user_to_db(chat_id):
     conn = create_db_connection()
     cur = conn.cursor()
-    existing_user = find_user_in_db(cur, chat_id)
 
-    if not existing_user:
+    new_user = False
+    user = find_user_in_db(cur, chat_id)
+
+    if not user:
+        new_user = True
         cur.execute('INSERT INTO users (telegram_chat_id) VALUES (%s) ' % chat_id)
         conn.commit()
 
@@ -48,6 +51,8 @@ def save_user_to_db(chat_id):
 
     cur.close()
     conn.close()
+
+    return new_user
 
 
 def find_user_in_db(cursor, chat_id):
@@ -66,6 +71,22 @@ def get_user_from_db(chat_id):
     cur.close()
     conn.close()
     return user
+
+
+def delete_user_from_db(chat_id):
+    conn = create_db_connection()
+    cur = conn.cursor()
+
+    user = find_user_in_db(cur, chat_id)
+
+    if user:
+        cur.execute('DELETE FROM users WHERE telegram_chat_id = %s;' % chat_id)
+        conn.commit()
+
+        print('user with id %s deleted from subscription' % chat_id, flush=True)
+
+    cur.close()
+    conn.close()
 
 
 def get_all_users():
