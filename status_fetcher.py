@@ -1,7 +1,14 @@
 import requests
 from datetime import datetime, timezone
 import json
+
+from database_api import save_update_block_cache, get_from_block_cache
+
 import settings
+
+
+class CommonFetchException(Exception):
+    pass
 
 
 def get_etherscan_status():
@@ -13,8 +20,12 @@ def get_etherscan_status():
         'closest': 'before',
         'apikey': settings.ETHERSCAN_TOKEN
     }
-    req = requests.get(url, params)
-    res = int(json.loads(req.content)['result'])
+    try:
+        req = requests.get(url, params)
+        res = int(json.loads(req.content)['result'])
+    except:
+        raise CommonFetchException()
+
     return res
 
 
@@ -31,24 +42,39 @@ def get_parity_status():
         "id": 1
     }
 
-    req = requests.post(jsonrpc_url, headers=jsonrpc_headers, json=data)
-    res = int(req.json()['result'], 16)
+    try:
+        req = requests.post(jsonrpc_url, headers=jsonrpc_headers, json=data)
+        res = int(req.json()['result'], 16)
+    except:
+        raise CommonFetchException()
+
     return res
 
 
 def get_bitcore_status():
     url = 'https://quras-bitcore.rocknblock.io/api/ETH/mainnet/block/tip'
     json_headers = {"Content-Type": "application/json"}
-    req = requests.get(url, headers=json_headers)
-    res = json.loads(req.content)['height']
+
+    try:
+        req = requests.get(url, headers=json_headers)
+        res = json.loads(req.content)['height']
+    except:
+        raise CommonFetchException()
+
     return res
 
 
 def get_sync_status():
-    result = {
-        'etherscan': get_etherscan_status(),
-        'parity': get_parity_status(),
-        'bitcore': get_bitcore_status()
-    }
-    return result
+    try:
+        result = {
+            'etherscan': get_etherscan_status(),
+            'parity': get_parity_status(),
+            'bitcore': get_bitcore_status()
+        }
 
+        save_update_block_cache(result)
+    except CommonFetchException:
+        print('Error in fetching new blocks, retry in 60s', flush=True)
+        result = get_from_block_cache()
+
+    return result
