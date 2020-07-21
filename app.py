@@ -5,8 +5,6 @@ from dotenv import find_dotenv
 from notifier import run_notifier
 from sync_bot import run_bot
 
-from settings import check_settings
-
 logging.basicConfig(level=logging.INFO, format='%(asctime)s (%(levelname)s) %(threadName)s - %(message)s')
 
 
