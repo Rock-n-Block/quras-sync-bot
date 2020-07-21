@@ -1,7 +1,7 @@
 import telebot
 import logging
 
-from status_fetcher import get_sync_status
+from status_fetcher import get_sync_status, status_to_text
 from database_api import save_user_to_db, get_all_users, delete_user_from_db
 import settings
 
@@ -37,10 +37,9 @@ def send_pong(message):
 @bot.message_handler(commands=['status'])
 def send_current_stats(message):
     current_status = get_sync_status()
-    status_list = []
-    for key, val in current_status.items():
-        status_list.append('{source}: {blocks}'.format(source=key.upper(), blocks=val))
-    status_text = '\n'.join(status_list)
+    # current_status.pop('cached')
+
+    status_text = status_to_text(current_status)
     logging.info('status request received')
     bot.send_message(message.chat.id, text=str(status_text), reply_markup=keyboard)
 

@@ -12,6 +12,18 @@ class CommonFetchException(Exception):
     pass
 
 
+class EtherscanFetchExecption(CommonFetchException):
+    pass
+
+
+class ParityFetchException(CommonFetchException):
+    pass
+
+
+class BitcoreFetchException(CommonFetchException):
+    pass
+
+
 def get_etherscan_status():
     url = 'https://api.etherscan.io/api'
     params = {
@@ -25,7 +37,7 @@ def get_etherscan_status():
         req = requests.get(url, params)
         res = int(json.loads(req.content)['result'])
     except:
-        raise CommonFetchException()
+        raise EtherscanFetchExecption()
 
     return res
 
@@ -47,7 +59,7 @@ def get_parity_status():
         req = requests.post(jsonrpc_url, headers=jsonrpc_headers, json=data)
         res = int(req.json()['result'], 16)
     except:
-        raise CommonFetchException()
+        raise ParityFetchException()
 
     return res
 
@@ -60,22 +72,55 @@ def get_bitcore_status():
         req = requests.get(url, headers=json_headers)
         res = json.loads(req.content)['height']
     except:
-        raise CommonFetchException()
+        raise BitcoreFetchException()
 
     return res
 
 
 def get_sync_status():
-    try:
-        result = {
-            'etherscan': get_etherscan_status(),
-            'parity': get_parity_status(),
-            'bitcore': get_bitcore_status()
-        }
+    cached_services = []
+    cached_values = get_from_block_cache()
 
-        save_update_block_cache(result)
-    except CommonFetchException:
-        logging.error('Error in fetching new blocks, retry in 60s')
-        result = get_from_block_cache()
+    try:
+        etherscan_value = get_etherscan_status()
+    except EtherscanFetchExecption:
+        etherscan_value = cached_values['etherscan']
+        cached_services.append('etherscan')
+
+    try:
+        parity_value = get_parity_status()
+    except ParityFetchException:
+        parity_value = cached_values['parity']
+        cached_services.append('parity')
+
+    try:
+        bitcore_value = get_bitcore_status()
+    except EtherscanFetchExecption:
+        bitcore_value = cached_values['bitcore']
+        cached_services.append('bitcore')
+
+    result = {
+        'etherscan': etherscan_value,
+        'parity': parity_value,
+        'bitcore': bitcore_value,
+    }
+    save_update_block_cache(result)
+    result['cached'] =  cached_services if len(cached_services) > 0 else False
 
     return result
+
+
+def status_to_text(current_status):
+    cache = current_status.pop('cached')
+
+    status_list = []
+    for key, val in current_status.items():
+        status_list.append('{source}: {blocks}'.format(source=key.upper(), blocks=val))
+    status_text = '\n'.join(status_list)
+
+    if cache:
+        cache_text = '\n\nWARNING: Could not retrieve information from: {cache_list}. Current values taken from cache' \
+            .format(cache_list=', '.join([service.upper() for service in cache]))
+        status_text += cache_text
+
+    return status_text
