@@ -8,13 +8,35 @@ from sync_bot import run_bot
 logging.basicConfig(level=logging.INFO, format='%(asctime)s (%(levelname)s) %(threadName)s - %(message)s')
 
 
-def main():
-    bot_thread = threading.Thread(target=run_bot)
-    bot_thread.name = 'TelegramBot'
-    notifer_thread = threading.Thread(target=run_notifier)
-    notifer_thread.name = 'Notifier'
+def continuous_thread(thread_process):
+    def wrapper():
+        while True:
+            try:
+                thread_process()
+            except BaseException as e:
+                logging.error('Error in thread execution')
+                logging.error(e)
+                logging.info('Restarting thread')
+            else:
+                logging.info('Thread exited, restarting')
+    return wrapper
 
+
+@continuous_thread
+def notifier_process():
+    run_notifier()
+
+
+@continuous_thread
+def bot_process():
+    run_bot()
+
+
+def main():
+    bot_thread = threading.Thread(target=wrapper(bot_process), name='TelegramBot')
     bot_thread.start()
+
+    notifer_thread = threading.Thread(target=wrapper(notifier_process), name='Notifier')
     notifer_thread.start()
 
     logging.info('Threads started')

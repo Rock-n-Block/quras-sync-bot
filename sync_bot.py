@@ -51,9 +51,5 @@ def send_unsubscribe(message):
     bot.send_message(message.chat.id, text=msg_text, reply_markup=keyboard)
 
 
-def run_bot():
-    bot.polling()
-
-
 if __name__ == '__main__':
     run_bot()
