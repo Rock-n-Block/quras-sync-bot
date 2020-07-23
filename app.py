@@ -33,10 +33,10 @@ def bot_process():
 
 
 def main():
-    bot_thread = threading.Thread(target=wrapper(bot_process), name='TelegramBot')
+    bot_thread = threading.Thread(target=continuous_thread(bot_process), name='TelegramBot')
     bot_thread.start()
 
-    notifer_thread = threading.Thread(target=wrapper(notifier_process), name='Notifier')
+    notifer_thread = threading.Thread(target=continuous_thread(notifier_process), name='Notifier')
     notifer_thread.start()
 
     logging.info('Threads started')
