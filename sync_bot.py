@@ -52,8 +52,8 @@ def send_unsubscribe(message):
 
 
 def run_bot():
+    logging.info('Starting Telegram bot')
     bot.polling()
-    logging.info('Telegram bot launched')
 
 
 if __name__ == '__main__':
