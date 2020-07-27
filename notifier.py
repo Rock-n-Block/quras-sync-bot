@@ -37,7 +37,7 @@ def run_notifier():
     while True:
         sync_status = get_sync_status()
         is_current_status_alert(sync_status)
-        sleep(60)
+        sleep(3 * 60)
 
 
 if __name__ == '__main__':
