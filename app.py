@@ -1,9 +1,10 @@
 import logging
 import threading
 from dotenv import find_dotenv
+import argparse
 
 from notifier import run_notifier
-from sync_bot import run_bot
+from sync_bot import run_bot, send_system_stable
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s (%(levelname)s) %(threadName)s - %(message)s')
 
@@ -42,8 +43,23 @@ def main():
     logging.info('Threads started')
 
 
+# if __name__ == '__main__':
+#     if find_dotenv() is not '':
+#         main()
+#     else:
+#         logging.error('Cannot find .env with settings, terminate.')
+
 if __name__ == '__main__':
-    if find_dotenv() is not '':
-        main()
-    else:
-        logging.error('Cannot find .env with settings, terminate.')
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--run', help='run application', action='store_true')
+    parser.add_argument('--send_stable', help='send message to users that all systems stabilized')
+
+    args = parser.parse_args()
+    if args.run:
+        if find_dotenv() is not '':
+            main()
+        else:
+            logging.error('Cannot find .env with settings, terminate.')
+    if args.send_stable:
+        minutes = args.send_stable
+        send_system_stable(minutes)

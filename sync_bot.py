@@ -17,6 +17,19 @@ def send_to_all(message):
         bot.send_message(chat_id=user, text=message)
 
 
+def send_system_stable(in_minutes=None):
+    current_status = get_sync_status()
+    original_msg = status_to_text(current_status)
+    pref_msg = 'All systems stabilized, and services will be run normally in short time.'
+    if in_minutes:
+        time_part = '\nEstimated time to sync with mainnet: %s minutes' % in_minutes
+        pref_msg = pref_msg + time_part
+
+    msg = pref_msg + '\nCurrent status is: \n\n'
+    send_to_all(msg + original_msg)
+    # print(msg + original_msg)
+
+
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
     new_user = save_user_to_db(message.chat.id)
