@@ -105,7 +105,7 @@ def get_sync_status():
         'bitcore': bitcore_value,
     }
     save_update_block_cache(result)
-    result['cached'] =  cached_services if len(cached_services) > 0 else False
+    result['cached'] = cached_services if len(cached_services) > 0 else False
 
     return result
 

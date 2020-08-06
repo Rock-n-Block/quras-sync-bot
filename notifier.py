@@ -3,6 +3,7 @@ from time import sleep
 import logging
 
 from status_fetcher import get_sync_status, CommonFetchException, status_to_text
+from database_api import save_update_status_core_common, get_from_status_core
 from sync_bot import bot, send_to_all
 
 from settings import ALERT_BLOCK_DIFFERENCE
@@ -32,11 +33,25 @@ def is_current_status_alert(sync_status):
     return False
 
 
+def save_status_info(status_info):
+    now = int(datetime.now().timestamp())
+    if status_info:
+        status_core = {'last_blocks_update': now, 'last_error': now}
+    else:
+        status_core = get_from_status_core()
+        status_core['last_blocks_update'] = now
+        if status_core['last_error']
+
+    save_update_status_core_common(status_core)
+
+
 def run_notifier():
     logging.info('Notifier launched')
     while True:
         sync_status = get_sync_status()
-        is_current_status_alert(sync_status)
+        status_info = is_current_status_alert(sync_status)
+        save_status_info(status_info)
+
         sleep(3 * 60)
 
 
