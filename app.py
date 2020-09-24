@@ -2,6 +2,7 @@ import logging
 import threading
 from dotenv import find_dotenv
 import argparse
+import time
 
 from notifier import run_notifier
 from sync_bot import run_bot, send_system_stable
@@ -17,6 +18,7 @@ def continuous_thread(thread_process):
             except BaseException as e:
                 logging.error('Error in thread execution')
                 logging.error(e)
+                time.sleep(30)
                 logging.info('Restarting thread')
             else:
                 logging.info('Thread exited, restarting')
