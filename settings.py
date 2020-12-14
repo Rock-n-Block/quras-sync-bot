@@ -6,6 +6,7 @@ load_dotenv()
 TELEGRAM_TOKEN = os.getenv('TELEGRAM_TOKEN')
 ETHERSCAN_TOKEN = os.getenv('ETHERSCAN_TOKEN')
 
+PARITY_SCHEME = os.getenv('PARITY_SCHEME')
 PARITY_IP = os.getenv('PARITY_IP')
 PARITY_PORT = os.getenv('PARITY_PORT')
 
