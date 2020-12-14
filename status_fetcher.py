@@ -43,7 +43,7 @@ def get_etherscan_status():
 
 
 def get_parity_status():
-    jsonrpc_url = 'http://{ip}:{port}'.format(ip=settings.PARITY_IP, port=settings.PARITY_PORT)
+    jsonrpc_url = '{scheme}://{ip}:{port}'.format(scheme=settings.PARITY_SCHEME, ip=settings.PARITY_IP, port=settings.PARITY_PORT)
     jsonrpc_headers = {"Content-Type": "application/json"}
     method_call = 'eth_blockNumber'
     method_params = []
